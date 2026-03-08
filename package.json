@@ -1,0 +1,22 @@
+{
+  "name": "test-voice-agent",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@google/genai": "^1.44.0",
+    "alawmulaw": "^6.0.0",
+    "dotenv": "^17.3.1",
+    "express": "^4.21.0",
+    "express-ws": "^5.0.2",
+    "twilio": "^5.12.2",
+    "ws": "^8.19.0"
+  }
+}
