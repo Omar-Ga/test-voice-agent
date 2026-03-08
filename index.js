@@ -180,7 +180,7 @@ app.ws('/stream', (ws, req) => {
             }
 
             // Apply audio gain to boost quiet phone audio for Gemini's VAD
-            const GAIN = 3.0;
+            const GAIN = 2.0;
             for (let i = 0; i < pcm8kHz.length; i++) {
                 let sample = pcm8kHz[i] * GAIN;
                 // Clamp to 16-bit signed range to prevent clipping distortion
