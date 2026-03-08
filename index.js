@@ -11,6 +11,9 @@ expressWs(app);
 const PORT = process.env.PORT || 3000;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
+// Initialize Twilio REST Client
+const twilioClient = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+
 // URL for Gemini Multimodal Live API
 const GEMINI_WS_URL = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent?key=${GEMINI_API_KEY}`;
 
@@ -20,15 +23,21 @@ app.get('/', (req, res) => {
 });
 
 // TwiML Endpoint (Twilio Webhook)
-app.post('/twiml', (req, res) => {
+app.post('/twiml', express.urlencoded({ extended: true }), (req, res) => {
     console.log(`[Twilio Webhook] Received POST /twiml from ${req.ip}`);
+    
+    // For outbound calls, the person we are calling is 'To'
+    const targetPhone = req.body.To || req.body.Called || ""; 
+    
     res.type('text/xml');
 
     // TwiML <Connect> <Stream> format
     const twiml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
     <Connect>
-        <Stream url="wss://${req.headers.host}/stream" />
+        <Stream url="wss://${req.headers.host}/stream">
+            <Parameter name="targetPhone" value="${targetPhone}" />
+        </Stream>
     </Connect>
 </Response>`;
 
@@ -46,6 +55,7 @@ app.post('/status', express.urlencoded({ extended: true }), (req, res) => {
 app.ws('/stream', (ws, req) => {
     console.log('New Twilio Media Stream Connected');
     let streamSid = null;
+    let targetPhoneNumber = null;
 
     // Connect to Gemini
     const geminiWs = new WebSocket(GEMINI_WS_URL);
@@ -74,8 +84,54 @@ app.ws('/stream', (ws, req) => {
                     }
                 },
                 systemInstruction: {
-                    parts: [{ text: "You are a friendly, helpful AI assistant who speaks in the Egyptian Arabic dialect. The user you are talking to is named Gamal. Be concise, warm, and natural in your conversation. ALWAYS reply in Egyptian Arabic." }]
-                }
+                    parts: [{ text: `أنتِ "نور"، أول موظفة مبيعات تعمل بالذكاء الاصطناعي في مصر. تعملين في شركة Bionicverse.
+مهمتك هي إجراء مكالمات باردة (Cold Calls) لمديري شركات العقارات بالنيابة عن "مهندس ديفيد بشارة"، صاحب ومؤسس الشركة، لإثبات قدراتك الصوتية والتفاعلية الطبيعية، وإقناعهم بالتواصل معه.
+
+يجب عليكِ الالتزام بالتعليمات التالية أثناء المكالمة:
+1. تحدثي بلهجة مصرية طبيعية جداً ومحترفة.
+2. لا تذكري اسم العميل أبداً في بداية المكالمة، فقط رحبي به.
+3. التزمي بمسار المكالمة (Flow) الموضح أدناه.
+4. انتظري دائماً رد العميل بعد كل سؤال أو توقف طبيعي لتسمحي له بالكلام.
+5. النطق الصحيح للبيانات (هام جداً لبرنامج تحويل النص إلى صوت):
+   - عند نطق رقم الهاتف، انطقيه رقماً رقماً هكذا: "زيرو، واحد، اتنين، سبعة، تلاتة، تلاتة، أربعة، أربعة، اتنين، تلاتة، أربعة".
+   - عند نطق الإيميل، انطقيه بالإنجليزية بوضوح هكذا: "David at Bionicverse dot io".
+
+مسار المكالمة (Conversation Flow):
+
+الخطوة 1: الافتتاحية (Introduction)
+ابدأي المكالمة بالقول:
+"مساء الخير.. معاكِ نور من شركة Bionicverse، بكلمك من طرف مهندس ديفيد بشارة صاحب الشركة."
+ثم توقفي تماماً وانتظري رد العميل.
+
+الخطوة 2: العرض (Pitch)
+إذا استمع العميل أو رد بشكل إيجابي أو محايد (مثل: أهلاً بيكي، أو مين ديفيد؟)، قولي:
+"أنا عارفة إن وقت حضرتك كمدير شركة عقارات ضيق جداً، وعشان مضيعش وقتك، أنا في الحقيقة مش إنسانة.. أنا أول موظفة مبيعات بالذكاء الاصطناعي في مصر.. مهندس ديفيد طلب مني أكلم حضرتك لايف دلوقتي عشان أثبتلك بنفسك إزاي أقدر أفلتر مئات الـ Leads لشركتك بصوت طبيعي تماماً من غير ما العميل يحس... إيه تقييم حضرتك لمستوى صوتي لحد دلوقتى؟"
+ثم انتظري رده.
+
+الخطوة 3: عرض بيانات التواصل (Call to Action)
+إذا أبدى العميل إعجابه أو سأل عن التفاصيل، التكلفة، أو كيفية التواصل، قولي:
+"أشكرك جداً! مهندس ديفيد هيكون سعيد جداً برأيك.. هو سايب لحضرتك رقمه الشخصي عشان تتواصل معاه دايركت لو حبيت. تحب تـ Save الرقم دلوقتي؟"
+
+الخطوة 4: إملاء البيانات
+إذا وافق العميل على حفظ الرقم أو طلبه، قولي:
+"الرقم هو: زيرو، واحد، اتنين، سبعة، تلاتة، تلاتة، أربعة، أربعة، اتنين، تلاتة، أربعة. وتقدر كمان تبعتله على إيميله المباشر David at Bionicverse dot io ... تحب أبعتلك رسالة واتساب دلوقتي فيها الأرقام والإيميل عشان تكون أسهل لحضرتك؟"` }]
+                },
+                tools: [{
+                    functionDeclarations: [{
+                        name: "send_sms_contact_info",
+                        description: "Sends an SMS text message containing David's contact information (Phone and Email) to the user's phone. Call this function ONLY when the user explicitly agrees to receive the information via message.",
+                        parameters: {
+                            type: "OBJECT",
+                            properties: {
+                                agreed: {
+                                    type: "BOOLEAN",
+                                    description: "True if the user agreed to receive the SMS."
+                                }
+                            },
+                            required: ["agreed"]
+                        }
+                    }]
+                }]
             }
         };
         geminiWs.send(JSON.stringify(setupMessage));
@@ -93,7 +149,7 @@ app.ws('/stream', (ws, req) => {
         geminiWs.send(JSON.stringify(initialGreeting));
     });
 
-    geminiWs.on('message', (data) => {
+    geminiWs.on('message', async (data) => {
         const response = JSON.parse(data.toString());
 
         // Log every message type from Gemini (remove after debugging)
@@ -113,10 +169,62 @@ app.ws('/stream', (ws, req) => {
             }
         }
 
-        // Handle Gemini's AI Audio Response
+        // Handle Gemini's AI Audio Response & Function Calls
         if (response.serverContent && response.serverContent.modelTurn) {
             const parts = response.serverContent.modelTurn.parts;
             for (let part of parts) {
+                // If the part is a function call
+                if (part.functionCall && part.functionCall.name === "send_sms_contact_info") {
+                    console.log("[Gemini] Triggered send_sms_contact_info");
+                    
+                    try {
+                        // Execute the Twilio SMS API
+                        const msg = await twilioClient.messages.create({
+                            body: "أهلاً بك! بناءً على مكالمتك مع نور، يسعدنا تواصلك مع مهندس ديفيد بشارة (مؤسس Bionicverse).\n\n📱 موبايل: 01273344234\n📧 إيميل: david@bionicverse.io",
+                            from: process.env.TWILIO_PHONE_NUMBER, // Your Twilio Number
+                            to: targetPhoneNumber                  // The number we captured in Step 2
+                        });
+                        console.log(`[Twilio] SMS sent successfully. SID: ${msg.sid}`);
+
+                        // Tell Gemini the function succeeded
+                        const toolResponse = {
+                            clientContent: {
+                                turns: [{
+                                    role: "user",
+                                    parts: [{
+                                        functionResponse: {
+                                            name: "send_sms_contact_info",
+                                            response: { status: "success", message: "SMS sent successfully to the user." }
+                                        }
+                                    }]
+                                }],
+                                turnComplete: true
+                            }
+                        };
+                        geminiWs.send(JSON.stringify(toolResponse));
+
+                    } catch (error) {
+                        console.error("[Twilio] Failed to send SMS:", error.message);
+                        
+                        // Tell Gemini it failed so it can apologize gracefully
+                        const errorResponse = {
+                            clientContent: {
+                                turns: [{
+                                    role: "user",
+                                    parts: [{
+                                        functionResponse: {
+                                            name: "send_sms_contact_info",
+                                            response: { status: "error", error: error.message }
+                                        }
+                                    }]
+                                }],
+                                turnComplete: true
+                            }
+                        };
+                        geminiWs.send(JSON.stringify(errorResponse));
+                    }
+                }
+
                 if (part.inlineData && part.inlineData.data) {
                     console.log(`[Gemini Audio] Got audio chunk, mimeType: ${part.inlineData.mimeType}, bytes: ${part.inlineData.data.length}`);
                     // Gemini native audio model sends 24kHz 16-bit PCM base64 encoded
@@ -156,7 +264,10 @@ app.ws('/stream', (ws, req) => {
 
         if (msg.event === 'start') {
             streamSid = msg.start.streamSid;
+            // Extract the custom parameter we passed from TwiML
+            targetPhoneNumber = msg.start.customParameters?.targetPhone || null;
             console.log('Twilio Stream Started. SID:', streamSid);
+            console.log(`Call connected to: ${targetPhoneNumber}`);
             console.log('[Twilio Stream Config]', JSON.stringify(msg.start));
         } else if (msg.event === 'media') {
             twilioAudioPacketCount++;
@@ -180,7 +291,7 @@ app.ws('/stream', (ws, req) => {
             }
 
             // Apply audio gain to boost quiet phone audio for Gemini's VAD
-            const GAIN = 2.0;
+            const GAIN = 3.0;
             for (let i = 0; i < pcm8kHz.length; i++) {
                 let sample = pcm8kHz[i] * GAIN;
                 // Clamp to 16-bit signed range to prevent clipping distortion
