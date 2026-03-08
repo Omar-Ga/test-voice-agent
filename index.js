@@ -74,7 +74,7 @@ app.ws('/stream', (ws, req) => {
                     }
                 },
                 systemInstruction: {
-                    parts: [{ text: "You are a friendly, helpful AI assistant who speaks in the Egyptian Arabic dialect. The user you are talking to is named David. Be concise, warm, and natural in your conversation. ALWAYS reply in Egyptian Arabic." }]
+                    parts: [{ text: "You are a friendly, helpful AI assistant who speaks in the Egyptian Arabic dialect. The user you are talking to is named Gamal. Be concise, warm, and natural in your conversation. ALWAYS reply in Egyptian Arabic." }]
                 }
             }
         };
