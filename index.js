@@ -118,13 +118,13 @@ app.ws('/stream', (ws, req) => {
                 tools: [{
                     functionDeclarations: [{
                         name: "send_sms_contact_info",
-                        description: "CRITICAL: Call this function IMMEDIATELY when the user says 'yes', 'send it', 'okay', 'sure', 'fine', 'تمام', 'ياريت', 'ماشي', or shows ANY form of agreement to receive an SMS. DO NOT wait for them to finish speaking if they have already agreed. DO NOT ask for confirmation. Trigger this tool NOW.",
+                        description: "CRITICAL: Call this function IMMEDIATELY the exact moment the user agrees to receive an SMS or explicitly asks for it at ANY point in the call (e.g., 'ابعتي', 'تمام', 'أيوة', 'ياريت', 'ابعت', 'ماشي'). استدعي هذه الأداة فوراً وبدون تردد بمجرد طلب العميل للرسالة أو موافقته عليها.",
                         parameters: {
                             type: "OBJECT",
                             properties: {
                                 agreed: {
                                     type: "BOOLEAN",
-                                    description: "Must be true. The user has agreed to receive the contact information via SMS."
+                                    description: "Set to True if the user agreed or asked to receive the SMS (وافق على استلام الرسالة)."
                                 }
                             },
                             required: ["agreed"]
