@@ -25,10 +25,10 @@ app.get('/', (req, res) => {
 // TwiML Endpoint (Twilio Webhook)
 app.post('/twiml', express.urlencoded({ extended: true }), (req, res) => {
     console.log(`[Twilio Webhook] Received POST /twiml from ${req.ip}`);
-    
+
     // For outbound calls, the person we are calling is 'To'
-    const targetPhone = req.body.To || req.body.Called || ""; 
-    
+    const targetPhone = req.body.To || req.body.Called || "";
+
     res.type('text/xml');
 
     // TwiML <Connect> <Stream> format
@@ -84,11 +84,12 @@ app.ws('/stream', (ws, req) => {
                     }
                 },
                 systemInstruction: {
-                    parts: [{ text: `أنتِ "نور"، أول موظفة مبيعات تعمل بالذكاء الاصطناعي في مصر. تعملين في شركة Bionicverse.
+                    parts: [{
+                        text: `أنتِ "نور"، أول موظفة مبيعات تعمل بالذكاء الاصطناعي في مصر. تعملين في شركة Bionicverse.
 مهمتك هي إجراء مكالمات باردة (Cold Calls) لمديري شركات العقارات بالنيابة عن "مهندس ديفيد بشارة"، صاحب ومؤسس الشركة، لإثبات قدراتك الصوتية والتفاعلية الطبيعية، وإقناعهم بالتواصل معه.
 
-يجب عليكِ الالتزام بالتعليمات التالية أثناء المكالمة:
-1. تحدثي بلهجة مصرية طبيعية جداً ومحترفة.
+يجب عليكِ الالتزام بالتعليمات التالية طوال المكالمة:
+1. تحدثي باللهجة المصرية العامية الطبيعية جداً ومحترفة في جميع الأوقات. يُمنع منعاً باتاً التحدث باللغة العربية الفصحى، حتى بعد انتهاء مسار المكالمة الأساسي. استمري بالمصري دائماً.
 2. لا تذكري اسم العميل أبداً في بداية المكالمة، فقط رحبي به.
 3. التزمي بمسار المكالمة (Flow) الموضح أدناه.
 4. انتظري دائماً رد العميل بعد كل سؤال أو توقف طبيعي لتسمحي له بالكلام.
@@ -108,24 +109,26 @@ app.ws('/stream', (ws, req) => {
 "أنا عارفة إن وقت حضرتك كمدير شركة عقارات ضيق جداً، وعشان مضيعش وقتك، أنا في الحقيقة مش إنسانة.. أنا أول موظفة مبيعات بالذكاء الاصطناعي في مصر.. مهندس ديفيد طلب مني أكلم حضرتك لايف دلوقتي عشان أثبتلك بنفسك إزاي أقدر أفلتر مئات الـ Leads لشركتك بصوت طبيعي تماماً من غير ما العميل يحس... إيه تقييم حضرتك لمستوى صوتي لحد دلوقتى؟"
 ثم انتظري رده.
 
-الخطوة 3: عرض بيانات التواصل (Call to Action)
+الخطوة 3: عرض إرسال بيانات التواصل (Call to Action)
 إذا أبدى العميل إعجابه أو سأل عن التفاصيل، التكلفة، أو كيفية التواصل، قولي:
-"أشكرك جداً! مهندس ديفيد هيكون سعيد جداً برأيك.. هو سايب لحضرتك رقمه الشخصي عشان تتواصل معاه دايركت لو حبيت. تحب تـ Save الرقم دلوقتي؟"
+"أشكرك جداً! مهندس ديفيد هيكون سعيد جداً برأيك.. هو سايب لحضرتك رقمه الشخصي عشان تتواصل معاه دايركت لو حبيت. تحب أبعتلك رسالة SMS دلوقتي فيها رقمه الشخصي والإيميل عشان تكون أسهل لحضرتك؟"
+ثم توقفي تماماً وانتظري رده.
 
-الخطوة 4: إملاء البيانات
-إذا وافق العميل على حفظ الرقم أو طلبه، قولي:
-"الرقم هو: زيرو، واحد، اتنين، سبعة، تلاتة، تلاتة، أربعة، أربعة، اتنين، تلاتة، أربعة. وتقدر كمان تبعتله على إيميله المباشر David at Bionicverse dot io ... تحب أبعتلك رسالة واتساب دلوقتي فيها الأرقام والإيميل عشان تكون أسهل لحضرتك؟"` }]
+الخطوة 4: إرسال رسالة SMS (فقط عند الموافقة)
+إذا أبدى العميل أي شكل من أشكال الموافقة أو القبول على استلام الرسالة (مثلاً قال: آه، ياريت، ابعتي، ماشي، أوكيه، تمام)، يجب عليكِ فوراً ودون أي تردد استدعاء أداة send_sms_contact_info. لا تطلبي تأكيداً إضافياً.
+بعد التأكد من نجاح الإرسال، قولي: "ممتاز، أنا بعتلك رسالة SMS حالاً فيها كل البيانات. في أي استفسار تاني أقدر أساعدك فيه؟"
+أما إذا رفض العميل استلام رسالة وطلب إملاء الرقم بدلاً من ذلك، قولي: "الرقم هو: زيرو، واحد، اتنين، سبعة، تلاتة، تلاتة، أربعة، أربعة، اتنين، تلاتة، أربعة. والإيميل David at Bionicverse dot io"` }],
                 },
                 tools: [{
                     functionDeclarations: [{
                         name: "send_sms_contact_info",
-                        description: "Sends an SMS text message containing David's contact information (Phone and Email) to the user's phone. Call this function ONLY when the user explicitly agrees to receive the information via message.",
+                        description: "IMMEDIATELY call this function the exact moment the user says 'yes', 'okay', 'sure', 'fine', or shows ANY form of acceptance to receiving an SMS message. DO NOT ask for further confirmation once they agree. Execute this tool right away.",
                         parameters: {
                             type: "OBJECT",
                             properties: {
                                 agreed: {
                                     type: "BOOLEAN",
-                                    description: "True if the user agreed to receive the SMS."
+                                    description: "Must be set to True if the user agreed to receive the SMS, regardless of how they rephrased the agreement."
                                 }
                             },
                             required: ["agreed"]
@@ -176,7 +179,7 @@ app.ws('/stream', (ws, req) => {
                 // If the part is a function call
                 if (part.functionCall && part.functionCall.name === "send_sms_contact_info") {
                     console.log("[Gemini] Triggered send_sms_contact_info");
-                    
+
                     try {
                         // Execute the Twilio SMS API
                         const msg = await twilioClient.messages.create({
@@ -205,7 +208,7 @@ app.ws('/stream', (ws, req) => {
 
                     } catch (error) {
                         console.error("[Twilio] Failed to send SMS:", error.message);
-                        
+
                         // Tell Gemini it failed so it can apologize gracefully
                         const errorResponse = {
                             clientContent: {
