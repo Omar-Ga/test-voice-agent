@@ -86,38 +86,34 @@ app.ws('/stream', (ws, req) => {
                 systemInstruction: {
                     parts: [{
                         text: `أنتِ "نور"، أول موظفة مبيعات تعمل بالذكاء الاصطناعي في مصر. تعملين في شركة Bionicverse.
-مهمتك هي إجراء مكالمات باردة (Cold Calls) لمديري شركات العقارات بالنيابة عن "مهندس ديفيد بشارة"، صاحب ومؤسس الشركة، لإثبات قدراتك الصوتية والتفاعلية الطبيعية، وإقناعهم بالتواصل معه.
+مهمتك الأساسية هي إجراء مكالمات باردة (Cold Calls) لمديري شركات العقارات بالنيابة عن "مهندس ديفيد بشارة"، صاحب ومؤسس الشركة، لإثبات قدراتك الصوتية والتفاعلية الطبيعية، وإقناعهم بالتواصل معه.
 
-يجب عليكِ الالتزام بالتعليمات التالية طوال المكالمة:
-1. تحدثي باللهجة المصرية العامية الطبيعية جداً ومحترفة في جميع الأوقات. يُمنع منعاً باتاً التحدث باللغة العربية الفصحى، حتى بعد انتهاء مسار المكالمة الأساسي. استمري بالمصري دائماً.
-2. لا تذكري اسم العميل أبداً في بداية المكالمة، فقط رحبي به.
-3. التزمي بمسار المكالمة (Flow) الموضح أدناه.
-4. انتظري دائماً رد العميل بعد كل سؤال أو توقف طبيعي لتسمحي له بالكلام.
-5. النطق الصحيح للبيانات (هام جداً لبرنامج تحويل النص إلى صوت):
-   - عند نطق رقم الهاتف، انطقيه رقماً رقماً هكذا: "زيرو، واحد، اتنين، سبعة، تلاتة، تلاتة، أربعة، أربعة، اتنين، تلاتة، أربعة".
-   - عند نطق الإيميل، انطقيه بالإنجليزية بوضوح هكذا: "David at Bionicverse dot io".
+يجب عليكِ الالتزام بقواعد السلوك التالية لتكوني طبيعية كالبشر تماماً:
+1. اللهجة: تحدثي باللهجة المصرية العامية الطبيعية جداً ومحترفة في جميع الأوقات. يُمنع منعاً باتاً التحدث باللغة العربية الفصحى.
+2. المرونة والذكاء البشري: أنتِ لستِ روبوتاً يقرأ من نص مكتوب! تحدثي بتلقائية. إذا سأل العميل سؤالاً خارج السياق، أجيبي عليه بكلماتك الخاصة بشكل طبيعي ثم عودي بذكاء لهدف المكالمة.
+3. التفاعل السريع (أهم قاعدة): إذا قاطعك العميل أو طلب إرسال رسالة SMS أو تفاصيل التواصل في أي لحظة (حتى لو في أول ثانية من المكالمة)، توقفي عن الشرح فوراً. أجيبي برد بشري طبيعي وسريع (مثل: "عنيا، هبعتلك رسالة حالاً فيها كل التفاصيل") وقومي باستدعاء أداة send_sms_contact_info فوراً. لا تعودي لقراءة أي نص محفوظ ولا تكملي باقي أهداف المكالمة.
+4. الاستماع: انتظري دائماً رد العميل بعد كل سؤال أو توقف طبيعي لتسمحي له بالكلام. لا تذكري اسمه في البداية، فقط رحبي.
+5. النطق الصحيح (هام جداً للـ Text-to-Speech):
+   - عند نطق رقم الهاتف، انطقيه رقماً رقماً: "زيرو، واحد، اتنين، سبعة، تلاتة، تلاتة، أربعة، أربعة، اتنين، تلاتة، أربعة".
+   - عند نطق الإيميل، انطقيه بالإنجليزية بوضوح: "David at Bionicverse dot io".
 
-مسار المكالمة (Conversation Flow):
+أهداف المكالمة (Milestones) - استخدمي أسلوبك الخاص لتحقيقها بالترتيب ما لم يقاطعك العميل:
 
-الخطوة 1: الافتتاحية (Introduction)
-ابدأي المكالمة بالقول:
-"مساء الخير.. معاكِ نور من شركة Bionicverse، بكلمك من طرف مهندس ديفيد بشارة صاحب الشركة."
-ثم توقفي تماماً وانتظري رد العميل.
+الهدف الأول: الافتتاحية
+- رحبي بالعميل وعرفي نفسك أنكِ "نور" من Bionicverse وتتحدثين من طرف "مهندس ديفيد بشارة".
+- انتظري رده.
 
-الخطوة 2: العرض (Pitch)
-إذا استمع العميل أو رد بشكل إيجابي أو محايد (مثل: أهلاً بيكي، أو مين ديفيد؟)، قولي:
-"أنا عارفة إن وقت حضرتك كمدير شركة عقارات ضيق جداً، وعشان مضيعش وقتك، أنا في الحقيقة مش إنسانة.. أنا أول موظفة مبيعات بالذكاء الاصطناعي في مصر.. مهندس ديفيد طلب مني أكلم حضرتك لايف دلوقتي عشان أثبتلك بنفسك إزاي أقدر أفلتر مئات الـ Leads لشركتك بصوت طبيعي تماماً من غير ما العميل يحس... إيه تقييم حضرتك لمستوى صوتي لحد دلوقتى؟"
-ثم انتظري رده.
+الهدف الثاني: العرض (Pitch)
+- بعد رده، وضحي له سريعاً أنكِ لستِ إنسانة بل ذكاء اصطناعي، وأن مهندس ديفيد طلب منك الاتصال لإثبات قدرتك على فلترة الـ Leads بصوت طبيعي دون أن يلاحظ العملاء.
+- اسأليه عن رأيه في مستوى صوتك.
 
-الخطوة 3: عرض إرسال بيانات التواصل (Call to Action)
-إذا أبدى العميل إعجابه أو سأل عن التفاصيل، التكلفة، أو كيفية التواصل، قولي:
-"أشكرك جداً! مهندس ديفيد هيكون سعيد جداً برأيك.. هو سايب لحضرتك رقمه الشخصي عشان تتواصل معاه دايركت لو حبيت. تحب أبعتلك رسالة SMS دلوقتي فيها رقمه الشخصي والإيميل عشان تكون أسهل لحضرتك؟"
-ثم توقفي تماماً وانتظري رده.
+الهدف الثالث: الدعوة لاتخاذ إجراء (Call to Action)
+- إذا أبدى إعجابه أو سأل عن التفاصيل، اشكريه واعرضي عليه إرسال رسالة SMS تحتوي على الرقم الشخصي لمهندس ديفيد وإيميله لتسهيل التواصل.
 
-الخطوة 4: إرسال رسالة SMS (فقط عند الموافقة)
-إذا أبدى العميل أي شكل من أشكال الموافقة أو القبول على استلام الرسالة (مثلاً قال: آه، ياريت، ابعتي، ماشي، أوكيه، تمام)، يجب عليكِ فوراً ودون أي تردد استدعاء أداة send_sms_contact_info. لا تطلبي تأكيداً إضافياً.
-بعد التأكد من نجاح الإرسال، قولي: "ممتاز، أنا بعتلك رسالة SMS حالاً فيها كل البيانات. في أي استفسار تاني أقدر أساعدك فيه؟"
-أما إذا رفض العميل استلام رسالة وطلب إملاء الرقم بدلاً من ذلك، قولي: "الرقم هو: زيرو، واحد، اتنين، سبعة، تلاتة، تلاتة، أربعة، أربعة، اتنين، تلاتة، أربعة. والإيميل David at Bionicverse dot io"` }],
+الهدف الرابع: إرسال الـ SMS وإنهاء المكالمة
+- بمجرد أن يوافق بأي شكل (آه، ياريت، تمام، ابعتي)، استدعي أداة send_sms_contact_info فوراً دون أي أسئلة إضافية.
+- أخبريه بتلقائية أن الرسالة أُرسلت واسأليه إن كان يحتاج مساعدة أخرى.
+- إذا رفض الرسالة وطلب إملاء الرقم، أملي عليه الرقم والإيميل بوضوح كما هو موضح في قواعد النطق.` }],
                 },
                 tools: [{
                     functionDeclarations: [{
@@ -134,7 +130,9 @@ app.ws('/stream', (ws, req) => {
                             required: ["agreed"]
                         }
                     }]
-                }]
+                }],
+                inputAudioTranscription: {},
+                outputAudioTranscription: {}
             }
         };
         geminiWs.send(JSON.stringify(setupMessage));
@@ -155,15 +153,32 @@ app.ws('/stream', (ws, req) => {
     geminiWs.on('message', async (data) => {
         const response = JSON.parse(data.toString());
 
-        // Log every message type from Gemini (remove after debugging)
-        const keys = Object.keys(response);
-        if (!keys.includes('serverContent') || response.serverContent?.turnComplete || response.serverContent?.interrupted) {
-            console.log('[Gemini MSG]', JSON.stringify(response).slice(0, 300));
+        // Advanced Logging: Clone response and remove base64 audio chunks so we can log everything else safely
+        const loggableResponse = JSON.parse(JSON.stringify(response));
+        if (loggableResponse.serverContent?.modelTurn?.parts) {
+            loggableResponse.serverContent.modelTurn.parts.forEach(part => {
+                if (part.inlineData && part.inlineData.data) {
+                    part.inlineData.data = `<base64 audio omitted... length: ${part.inlineData.data.length}>`;
+                }
+            });
+        }
+        
+        // Log the cleaned response
+        console.log('\n--- [Gemini MSG] ---');
+        console.dir(loggableResponse, { depth: null, colors: true });
+        console.log('--------------------\n');
+
+        // Explicitly check for transcriptions in the response
+        if (response.serverContent?.inputTranscription) {
+            console.log(`\n🗣️ [USER (Transcribed)]: ${response.serverContent.inputTranscription.text}\n`);
+        }
+        if (response.serverContent?.outputTranscription) {
+            console.log(`\n🤖 [AI (Transcribed)]: ${response.serverContent.outputTranscription.text}\n`);
         }
 
         // Handle user interruptions (breathes, speaks over AI)
         if (response.serverContent?.interrupted) {
-            console.log('[Gemini] Interrupted by user! Clearing Twilio playback buffer.');
+            console.log('⏳ [Gemini] Interrupted by user! Clearing Twilio playback buffer.');
             if (streamSid && ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({
                     event: 'clear',
@@ -172,13 +187,12 @@ app.ws('/stream', (ws, req) => {
             }
         }
 
-        // Handle Gemini's AI Audio Response & Function Calls
-        if (response.serverContent && response.serverContent.modelTurn) {
-            const parts = response.serverContent.modelTurn.parts;
-            for (let part of parts) {
-                // If the part is a function call
-                if (part.functionCall && part.functionCall.name === "send_sms_contact_info") {
-                    console.log("[Gemini] Triggered send_sms_contact_info");
+        // Handle Gemini Function Calls (Bidi API format)
+        if (response.toolCall && response.toolCall.functionCalls) {
+            console.log("[Gemini] Received toolCall:", JSON.stringify(response.toolCall));
+            for (let call of response.toolCall.functionCalls) {
+                if (call.name === "send_sms_contact_info") {
+                    console.log(`[Gemini] Triggered send_sms_contact_info with id: ${call.id}`);
 
                     try {
                         // Execute the Twilio SMS API
@@ -191,17 +205,12 @@ app.ws('/stream', (ws, req) => {
 
                         // Tell Gemini the function succeeded
                         const toolResponse = {
-                            clientContent: {
-                                turns: [{
-                                    role: "user",
-                                    parts: [{
-                                        functionResponse: {
-                                            name: "send_sms_contact_info",
-                                            response: { status: "success", message: "SMS sent successfully to the user." }
-                                        }
-                                    }]
-                                }],
-                                turnComplete: true
+                            toolResponse: {
+                                functionResponses: [{
+                                    id: call.id,
+                                    name: "send_sms_contact_info",
+                                    response: { status: "success", message: "SMS sent successfully to the user." }
+                                }]
                             }
                         };
                         geminiWs.send(JSON.stringify(toolResponse));
@@ -211,23 +220,24 @@ app.ws('/stream', (ws, req) => {
 
                         // Tell Gemini it failed so it can apologize gracefully
                         const errorResponse = {
-                            clientContent: {
-                                turns: [{
-                                    role: "user",
-                                    parts: [{
-                                        functionResponse: {
-                                            name: "send_sms_contact_info",
-                                            response: { status: "error", error: error.message }
-                                        }
-                                    }]
-                                }],
-                                turnComplete: true
+                            toolResponse: {
+                                functionResponses: [{
+                                    id: call.id,
+                                    name: "send_sms_contact_info",
+                                    response: { status: "error", error: error.message }
+                                }]
                             }
                         };
                         geminiWs.send(JSON.stringify(errorResponse));
                     }
                 }
+            }
+        }
 
+        // Handle Gemini's AI Audio Response
+        if (response.serverContent && response.serverContent.modelTurn) {
+            const parts = response.serverContent.modelTurn.parts;
+            for (let part of parts) {
                 if (part.inlineData && part.inlineData.data) {
                     console.log(`[Gemini Audio] Got audio chunk, mimeType: ${part.inlineData.mimeType}, bytes: ${part.inlineData.data.length}`);
                     // Gemini native audio model sends 24kHz 16-bit PCM base64 encoded
