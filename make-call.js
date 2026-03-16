@@ -14,7 +14,9 @@ if (!accountSid || !authToken || !twilioNumber || !myEgyptianNumber || !serverUr
     process.exit(1);
 }
 
-const client = new twilio(accountSid, authToken);
+const client = new twilio(accountSid, authToken, {
+    region: 'ie1'
+});
 
 async function makeOutboundCall() {
     try {
